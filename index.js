@@ -22,6 +22,7 @@ client.connect((err) => {
     .db("logisticService")
     .collection("bookings");
   const reviewsCollection = client.db("logisticService").collection("reviews");
+  const adminCollection = client.db("logisticService").collection("admin");
 
   // post database
   app.post("/addService", (req, res) => {
@@ -72,11 +73,50 @@ client.connect((err) => {
   });
 
   // get data by email query
-  app.get("/bookings", (req, res) => {
+  app.get("/bookingsByEmail", (req, res) => {
     bookingsCollection
       .find({ email: req.query.email })
       .toArray((err, items) => {
         res.send(items);
+      });
+  });
+
+  // get data by email query
+  app.get("/bookings", (req, res) => {
+    bookingsCollection.find({}).toArray((err, items) => {
+      res.send(items);
+    });
+  });
+
+  app.post("/addStatus", (req, res) => {
+    const newStatus = req.body;
+    bookingsCollection.insertOne(newStatus).then((result) => {
+      res.send(result.insertedCount > 0);
+    });
+  });
+
+  // admin
+  app.post("/makeAdmin", (req, res) => {
+    const newAdmin = req.body;
+    adminCollection.insertOne(newAdmin).then((result) => {
+      res.send(result.insertedCount > 0);
+    });
+  });
+
+  // check user isAdmin
+  app.post("/verifyAdmin", (req, res) => {
+    const email = req.body.email;
+    adminCollection.find({ adminEmail: email }).toArray((err, admin) => {
+      res.send(admin.length > 0);
+    });
+  });
+
+  // delete
+  app.delete("/deleteService/:id", (req, res) => {
+    servicesCollection
+      .deleteOne({ _id: ObjectId(req.params.id) })
+      .then((result) => {
+        res.send(result.deletedCount > 0);
       });
   });
 
