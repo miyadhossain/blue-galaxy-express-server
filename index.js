@@ -24,7 +24,7 @@ client.connect((err) => {
   const reviewsCollection = client.db("logisticService").collection("reviews");
   const adminCollection = client.db("logisticService").collection("admin");
 
-  // post database
+  // post database or service added
   app.post("/addService", (req, res) => {
     const newService = req.body;
     servicesCollection.insertOne(newService).then((result) => {
@@ -33,14 +33,14 @@ client.connect((err) => {
     });
   });
 
-  // read or get database
+  // get all services
   app.get("/services", (req, res) => {
     servicesCollection.find().toArray((err, items) => {
       res.send(items);
     });
   });
 
-  // to read product by keys
+  // to get bookings collection by Id
   app.get("/book/:id", (req, res) => {
     servicesCollection
       .find({ _id: ObjectId(req.params.id) })
@@ -49,7 +49,7 @@ client.connect((err) => {
       });
   });
 
-  // order placed
+  // Bookings add
   app.post("/addBookings", (req, res) => {
     const newBooking = req.body;
     bookingsCollection.insertOne(newBooking).then((result) => {
@@ -81,17 +81,10 @@ client.connect((err) => {
       });
   });
 
-  // get data by email query
+  // get bookings
   app.get("/bookings", (req, res) => {
     bookingsCollection.find({}).toArray((err, items) => {
       res.send(items);
-    });
-  });
-
-  app.post("/addStatus", (req, res) => {
-    const newStatus = req.body;
-    bookingsCollection.insertOne(newStatus).then((result) => {
-      res.send(result.insertedCount > 0);
     });
   });
 
@@ -120,6 +113,7 @@ client.connect((err) => {
       });
   });
 
+  // update data
   app.patch("/update/:id", (req, res) => {
     bookingsCollection
       .updateOne(
