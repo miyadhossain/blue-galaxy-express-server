@@ -120,6 +120,21 @@ client.connect((err) => {
       });
   });
 
+  app.patch("/update/:id", (req, res) => {
+    bookingsCollection
+      .updateOne(
+        { _id: ObjectId(req.params.id) },
+        {
+          $set: {
+            status: req.body.status,
+          },
+        }
+      )
+      .then((result) => {
+        res.send(result.modifiedCount > 0);
+      });
+  });
+
   console.log("MongoDB connect successfully");
 });
 
